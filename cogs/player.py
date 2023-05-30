@@ -165,7 +165,7 @@ VALUES (?,?,?,"",0,1)
             color=discord.Color.green()
         )
         author = ctx.message.author
-        pfp = ctx.message.author.avatar_url
+        pfp = ctx.message.author.avatar.url
         level = result[1]
         total_cards = result[2]
         battle_team = [x for x in result[3][:len(result[3])-1].split(",")] if result[3] != "" else None
@@ -404,7 +404,7 @@ WHERE user_id = '{ctx.message.author.id}'
             color=discord.Color.green()
         )
         author = ctx.message.author
-        pfp = ctx.message.author.avatar_url
+        pfp = ctx.message.author.avatar.url
         embed.set_author(name=str(author)[:len(str(author)) - 5], icon_url=pfp)
         await ctx.send(embed=embed)
         cursor.close()
@@ -587,6 +587,6 @@ VALUES ('{guild.id}', "")
                 self.responseDict[f"{hate} {name}"] = ":broken_heart:"
                 self.responseDict[f"{name} {hate}"] = ":broken_heart:"
 
-def setup(bot):
-    bot.add_cog(PlayerCog(bot))
+async def setup(bot):
+    await bot.add_cog(PlayerCog(bot))
     print("Player is loaded.")

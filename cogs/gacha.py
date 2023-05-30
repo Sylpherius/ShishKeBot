@@ -274,6 +274,6 @@ WHERE user_id = '{ctx.message.author.id}'
         db.close()
         return valid
 
-def setup(bot):
-    bot.add_cog(GachaCog(bot))
+async def setup(bot):
+    await bot.add_cog(GachaCog(bot))
     print("Gacha is loaded.")

@@ -1,6 +1,11 @@
 import discord
 from discord.ext import commands
 import sqlite3
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from database import KebotCards
+
 
 class AdminCog(commands.Cog, name="Admin"):
     def __init__(self, bot):
@@ -429,6 +434,50 @@ WHERE card_name = '{card_name}';
             cursor.close()
             db.close()
 
+    @commands.command(name='test-alchemy', help="Testing SQLAlchemy functionality - copying the compensate command")
+    async def test_alchemy(self, ctx, *args):
+
+        num_args = 2
+        if ctx.message.author.id == self.id["fufu"]:
+            engine = create_engine('sqlite:///main.sqlite')
+            session = Session(engine)
+
+            args = ctx.message.content[len(self.bot.command_prefix + "test-alchemy"):].strip().split(' ')
+            if len(args) == num_args:
+                card_name = ' '.join(args[0].split('_'))
+                new_series = args[1]
+                card = session.query(KebotCards).filter_by(card_name=card_name).first()
+
+                if card is not None:
+                    card.card_series = new_series
+                    session.commit()
+                    await ctx.send(f"Card '{card_name}' series has been changed to '{new_series}'!")
+                else:
+                    embed = discord.Embed(
+                        title=f":knife: ERROR :knife:",
+                        description=f"Card '{card_name}' does not exist!",
+                        color=discord.Color.red()
+                    )
+                    await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(
+                    title=f":knife: ERROR :knife:",
+                    description=f"features expected: " + str(num_args) +
+                                "\nfeatures received: " + str(len(args)),
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
+
+            session.close()
+            engine.dispose()
+        else:
+            embed = discord.Embed(
+                title=f":knife: ERROR :knife:",
+                description=f"You don't have the authority to edit cards.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
+
     @commands.command(name='compensate', brief="For bug fixes",
                       description="~compensate @user #")
     async def compensate(self, ctx, *args):
@@ -457,6 +506,6 @@ WHERE user_id = '{player}'
             await ctx.message.delete()
             await ctx.send(' '.join(args))
 
-def setup(bot):
-    bot.add_cog(AdminCog(bot))
+async def setup(bot):
+    await bot.add_cog(AdminCog(bot))
     print("Admin is loaded.")

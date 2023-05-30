@@ -656,6 +656,6 @@ WHERE user_id = '{ctx.message.author.id}'
         db.close()
         return valid
 
-def setup(bot):
-    bot.add_cog(BattleCog(bot))
+async def setup(bot):
+    await bot.add_cog(BattleCog(bot))
     print("Battle is loaded.")

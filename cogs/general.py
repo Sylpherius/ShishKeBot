@@ -100,6 +100,6 @@ VALUES ('{guild.id}', "")
         cursor.close()
         db.close()
 
-def setup(bot):
-    bot.add_cog(GeneralCog(bot))
+async def setup(bot):
+    await bot.add_cog(GeneralCog(bot))
     print("General is loaded.")

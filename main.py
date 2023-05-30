@@ -5,6 +5,10 @@ from dotenv import load_dotenv
 from discord.ext import commands
 import sys
 import discord
+from sqlalchemy import String
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -63,8 +67,17 @@ EPIC_RATE = 0.02
 LEGENDARY_RATE = 0.005
 claimable = False
 claimable_card = ""
+
+initial_extensions = ["cogs.admin", "cogs.player", "cogs.general", "cogs.battle", "cogs.gacha"]
+
+
 @bot.event
 async def on_ready():
+    for extension in initial_extensions:
+        try:
+            await bot.load_extension(extension)
+        except Exception as e:
+            print(f"Failed to load extension {extension}", file=sys.stderr)
     create_database(False)
     check_database(False)
     edit_database(False)
@@ -72,14 +85,6 @@ async def on_ready():
     reset_daily(True)
     print(f'{bot.user.name} has connected to Discord!')
 
-initial_extensions = ["cogs.admin", "cogs.player", "cogs.general", "cogs.battle", "cogs.gacha"]
-
-if __name__ == "__main__":
-    for extension in initial_extensions:
-        try:
-            bot.load_extension(extension)
-        except Exception as e:
-            print(f"Failed to load extension {extension}", file=sys.stderr)
 
 def reset_daily(val: bool):
     if val:
@@ -100,6 +105,7 @@ WHERE user_id = '{user_id}'
         cursor.close()
         db.close()
 
+
 # V.v.V DATABASE
 def create_database(val: bool):
     if val:
@@ -119,6 +125,7 @@ score TEXT
 
         cursor.close()
         db.close()
+
 
 def check_database(val: bool):
     if val:
@@ -143,6 +150,7 @@ ADD april_fools_card TEXT DEFAULT ""
         db.commit()
         cursor.close()
         db.close()
+
 
 def check_new_cards(val: bool):
     if val:
