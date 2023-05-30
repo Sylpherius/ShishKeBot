@@ -434,7 +434,7 @@ WHERE card_name = '{card_name}';
             cursor.close()
             db.close()
 
-    @commands.command(name='test-alchemy', help="Testing SQLAlchemy functionality - copying the compensate command")
+    @commands.command(name='test-alchemy', help="Testing SQLAlchemy functionality - copying the edit_series command")
     async def test_alchemy(self, ctx, *args):
 
         num_args = 2
