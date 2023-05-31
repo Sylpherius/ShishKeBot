@@ -2,6 +2,10 @@ import discord
 from discord.ext import commands
 import sqlite3
 
+from discord.ext.commands import Context
+from typing import Optional, Tuple
+
+
 class AdminCog(commands.Cog, name="Admin"):
     def __init__(self, bot):
         self.bot = bot
@@ -16,20 +20,20 @@ class AdminCog(commands.Cog, name="Admin"):
 
     # V.v.V CARD
     @commands.command(name='add-card', brief="Add a card", description="~add-card card rarity top_energy type series description")
-    async def add_card(self, ctx):
-        num_args = 5
+    async def add_card(self, ctx: Context) -> None:
+        num_args: int = 5
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
-            args = ctx.message.content[len(self.bot.command_prefix + "add-card"):].strip().split(' ')
+            args: list = ctx.message.content[len(self.bot.command_prefix + "add-card"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
-                image = args[0] + ".png"
-                card_rarity = args[1]
-                top_energy = int(args[2])
-                card_type = args[3]
-                card_series = args[4]
+                card_name: str = ' '.join(args[0].split('_'))
+                image: str = args[0] + ".png"
+                card_rarity: str = args[1]
+                top_energy: int = int(args[2])
+                card_type: str = args[3]
+                card_series: str = args[4]
                 if card_rarity not in self.rarity or card_type not in self.type:
                     embed = discord.Embed(
                         title=f":knife: ERROR :knife:",
@@ -39,7 +43,7 @@ class AdminCog(commands.Cog, name="Admin"):
                     await ctx.send(embed=embed)
                     return
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is None:
                     sql = (f'''
 INSERT INTO kebot_cards (card_name, image, card_rarity, top_energy, card_type, card_series)
@@ -76,17 +80,17 @@ VALUES (?,?,?,?,?,?)
             await ctx.send(embed=embed)
 
     @commands.command(name='remove-card', brief="Remove a card", description="~remove-card card")
-    async def remove_card(self, ctx):
-        num_args = 1
+    async def remove_card(self, ctx: Context) -> None:
+        num_args: int = 1
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "remove-card"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
+                card_name: str = ' '.join(args[0].split('_'))
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is not None:
                     cursor.execute(f'''
 DELETE FROM kebot_cards
@@ -121,19 +125,19 @@ WHERE card_name = '{card_name}';
             await ctx.send(embed=embed)
 
     @commands.command(name='edit-name', brief="Edit card", description="~edit-name name new_name")
-    async def edit_card_name(self, ctx):
-        num_args = 2
+    async def edit_card_name(self, ctx: Context) -> None:
+        num_args: int = 2
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "edit-name"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
-                new_name = ' '.join(args[1].split('_'))
-                new_image = args[1] + ".png"
+                card_name: str = ' '.join(args[0].split('_'))
+                new_name: str = ' '.join(args[1].split('_'))
+                new_image: str = args[1] + ".png"
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is not None:
                     cursor.execute(f'''
 UPDATE kebot_cards
@@ -169,16 +173,16 @@ WHERE card_name = '{card_name}';
             await ctx.send(embed=embed)
 
     @commands.command(name='edit-rarity', brief="Edit card", description="~edit-rarity name rarity")
-    async def edit_card_rarity(self, ctx):
-        num_args = 2
+    async def edit_card_rarity(self, ctx: Context) -> None:
+        num_args: int = 2
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "edit-rarity"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
-                new_rarity = args[1]
+                card_name: str = ' '.join(args[0].split('_'))
+                new_rarity: str = args[1]
                 if new_rarity not in self.rarity:
                     embed = discord.Embed(
                         title=f":knife: ERROR :knife:",
@@ -188,7 +192,7 @@ WHERE card_name = '{card_name}';
                     await ctx.send(embed=embed)
                     return
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is not None:
                     cursor.execute(f'''
 UPDATE kebot_cards
@@ -224,18 +228,18 @@ WHERE card_name = '{card_name}';
             await ctx.send(embed=embed)
 
     @commands.command(name='edit-energy', brief="Edit card", description="~edit-energy name energy")
-    async def edit_top_energy(self, ctx):
-        num_args = 2
+    async def edit_top_energy(self, ctx: Context) -> None:
+        num_args: int = 2
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "edit-energy"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
-                new_energy = int(args[1])
+                card_name: str = ' '.join(args[0].split('_'))
+                new_energy: int = int(args[1])
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is not None:
                     cursor.execute(f'''
 UPDATE kebot_cards
@@ -271,16 +275,16 @@ WHERE card_name = '{card_name}';
             await ctx.send(embed=embed)
 
     @commands.command(name='edit-type', brief="Edit card", description="~edit-type name type")
-    async def edit_card_type(self, ctx):
-        num_args = 2
+    async def edit_card_type(self, ctx: Context) -> None:
+        num_args: int = 2
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "edit-type"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
-                new_type = args[1]
+                card_name: str = ' '.join(args[0].split('_'))
+                new_type: str = args[1]
                 if new_type not in self.type:
                     embed = discord.Embed(
                         title=f":knife: ERROR :knife:",
@@ -289,9 +293,9 @@ WHERE card_name = '{card_name}';
                     )
                     await ctx.send(embed=embed)
                     return
-                new_type = self.type[new_type]
+                new_type: str = self.type[new_type]
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is not None:
                     cursor.execute(f'''
 UPDATE kebot_cards
@@ -327,18 +331,18 @@ WHERE card_name = '{card_name}';
             await ctx.send(embed=embed)
 
     @commands.command(name='edit-series', brief="Edit card", description="~edit-series name series")
-    async def edit_card_series(self, ctx):
-        num_args = 2
+    async def edit_card_series(self, ctx: Context) -> None:
+        num_args: int = 2
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "edit-series"):].strip().split(' ')
             if len(args) == num_args:
-                card_name = ' '.join(args[0].split('_'))
-                new_series = args[1]
+                card_name: str = ' '.join(args[0].split('_'))
+                new_series: str = args[1]
                 cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-                result = cursor.fetchone()
+                result: Optional[Tuple] = cursor.fetchone()
                 if result is not None:
                     cursor.execute(f'''
 UPDATE kebot_cards
@@ -374,16 +378,16 @@ WHERE card_name = '{card_name}';
             await ctx.send(embed=embed)
 
     @commands.command(name='edit-description', brief="Edit card", description="~edit-description name description")
-    async def edit_card_description(self, ctx):
+    async def edit_card_description(self, ctx: Context) -> None:
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
             args = ctx.message.content[len(self.bot.command_prefix + "edit-description"):].strip().split(' ')
-            card_name = ' '.join(args[0].split('_'))
-            new_description = ' '.join(args[1:])
+            card_name: str = ' '.join(args[0].split('_'))
+            new_description: str = ' '.join(args[1:])
             cursor.execute(f"SELECT card_name FROM kebot_cards WHERE card_name = '{card_name}'")
-            result = cursor.fetchone()
+            result: Optional[Tuple] = cursor.fetchone()
             if result is not None:
                 cursor.execute(f'''
 UPDATE kebot_cards
@@ -412,12 +416,12 @@ WHERE card_name = '{card_name}';
 
     # V.v.V TEST
     @commands.command(name='test', help="A test command. Does nothing.")
-    async def test(self, ctx, *args):
+    async def test(self, ctx: Context, *args) -> None:
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
-            image = "confidence_booster_allen.png"
+            image: str = "confidence_booster_allen.png"
             embed = discord.Embed(
                 title=f"Testing image",
                 color=discord.Color.green()
@@ -431,14 +435,14 @@ WHERE card_name = '{card_name}';
 
     @commands.command(name='compensate', brief="For bug fixes",
                       description="~compensate @user #")
-    async def compensate(self, ctx, *args):
+    async def compensate(self, ctx: Context, *args) -> None:
         if ctx.message.author.id == self.id["fufu"]:
             db = sqlite3.connect('main.sqlite')
             cursor = db.cursor()
 
-            player = args[0]
-            player = player[3:len(player) - 1]
-            primosticks = args[1]
+            player: str = args[0]
+            player: str = player[3:len(player) - 1]
+            primosticks: int = args[1]
             cursor.execute(f'''
 UPDATE kebot_users
 SET primosticks = primosticks + {primosticks}
@@ -457,6 +461,6 @@ WHERE user_id = '{player}'
             await ctx.message.delete()
             await ctx.send(' '.join(args))
 
-def setup(bot):
-    bot.add_cog(AdminCog(bot))
+async def setup(bot):
+    await bot.add_cog(AdminCog(bot))
     print("Admin is loaded.")

@@ -63,8 +63,16 @@ EPIC_RATE = 0.02
 LEGENDARY_RATE = 0.005
 claimable = False
 claimable_card = ""
+
+initial_extensions = ["cogs.admin", "cogs.player", "cogs.general", "cogs.battle", "cogs.gacha"]
+
 @bot.event
 async def on_ready():
+    for extension in initial_extensions:
+        try:
+            await bot.load_extension(extension)
+        except Exception as e:
+            print(f"Failed to load extension {extension}", file=sys.stderr)
     create_database(False)
     check_database(False)
     edit_database(False)
@@ -72,16 +80,7 @@ async def on_ready():
     reset_daily(True)
     print(f'{bot.user.name} has connected to Discord!')
 
-initial_extensions = ["cogs.admin", "cogs.player", "cogs.general", "cogs.battle", "cogs.gacha"]
-
-if __name__ == "__main__":
-    for extension in initial_extensions:
-        try:
-            bot.load_extension(extension)
-        except Exception as e:
-            print(f"Failed to load extension {extension}", file=sys.stderr)
-
-def reset_daily(val: bool):
+def reset_daily(val: bool) -> None:
     if val:
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
@@ -100,8 +99,9 @@ WHERE user_id = '{user_id}'
         cursor.close()
         db.close()
 
+
 # V.v.V DATABASE
-def create_database(val: bool):
+def create_database(val: bool) -> None:
     if val:
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
@@ -120,7 +120,8 @@ score TEXT
         cursor.close()
         db.close()
 
-def check_database(val: bool):
+
+def check_database(val: bool) -> None:
     if val:
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
@@ -132,7 +133,7 @@ def check_database(val: bool):
         db.close()
 
 
-def edit_database(val: bool):
+def edit_database(val: bool) -> None:
     if val:
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
@@ -144,7 +145,8 @@ ADD april_fools_card TEXT DEFAULT ""
         cursor.close()
         db.close()
 
-def check_new_cards(val: bool):
+
+def check_new_cards(val: bool) -> None:
     if val:
         db = sqlite3.connect('main.sqlite')
         cursor = db.cursor()
